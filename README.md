@@ -11,4 +11,4 @@ Montador do Assembly inventado para a disciplina de Software Básico da UnB
 
 Para compilar: make all
 
-Para executar: ./montador <path para o arquivo de entrada>
+Para executar: ./montador "path para o arquivo de entrada"
