@@ -1,3 +1,6 @@
+#ifndef MACRO_HPP
+#define MACRO_HPP
+
 #include <iostream>
 #include "utils.hpp"
 
@@ -10,6 +13,8 @@ typedef struct LinhaMNT{
 
 typedef struct LinhaMDT{
     char* codigo;
-} LinhaMNT;
+} LinhaMDT;
 
 void expandirMacro(LinhaMDT linhaMDT, char* saida);
+
+#endif
