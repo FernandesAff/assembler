@@ -56,7 +56,7 @@ list<TI> inicializarTI(){
 TI novaInstrucao(char* mnemonico, int operandos, int codigo, int tamanho){
     TI instrucao;
     instrucao.codigo = codigo;
-    instrucao.mnemonico = mnemonico;
+    instrucao.nome = mnemonico;
     instrucao.operandos = operandos;
     instrucao.tamanho = tamanho;
     return instrucao;
@@ -68,18 +68,79 @@ list<TD> inicializarTD(){
     tabelaDeDiretivas.push_back(novaDiretiva((char*) "SECTION", 1, 0));
     tabelaDeDiretivas.push_back(novaDiretiva((char*) "SPACE", -1, -1));
     tabelaDeDiretivas.push_back(novaDiretiva((char*) "CONST", 1, 1));
-    tabelaDeDiretivas.push_back(novaDiretiva((char*) "EQU", 1, 0));
-    tabelaDeDiretivas.push_back(novaDiretiva((char*) "IF", 1, 0));
     tabelaDeDiretivas.push_back(novaDiretiva((char*) "MACRO", 0, 0));
     tabelaDeDiretivas.push_back(novaDiretiva((char*) "END", 0, 0));
 
     return tabelaDeDiretivas;
 }
 
+list<TD> inicializarTDPre(){
+    list<TD> tabelaDeDiretivasPre;
+
+    tabelaDeDiretivasPre.push_back(novaDiretiva((char*) "EQU", 1, 0));
+    tabelaDeDiretivasPre.push_back(novaDiretiva((char*) "IF", 1, 0));
+
+    return tabelaDeDiretivasPre;
+}
+
 TD novaDiretiva(char* mnemonico, int operandos, int tamanho){
     TD diretiva;
-    diretiva.mnemonico = mnemonico;
+    diretiva.nome = mnemonico;
     diretiva.operandos = operandos;
     diretiva.tamanho = tamanho;
     return diretiva;
+}
+
+TS novoSimbolo(char* simbolo, int* valor){
+    TS simb;
+    simb.nome = simbolo;
+    simb.valor = valor;
+    return simb;
+}
+
+void split(const string& str, std::vector<string>& dest){
+	dest.clear();
+	string buffer{""};
+
+	for(auto c:str){
+        if(c == ';') break;
+		if(c != ' ' && c != '	') buffer+=c; else
+		if((c == ' ' || c == '	') && buffer != "") { dest.push_back(buffer); buffer = ""; }
+	}
+	if(buffer != "") dest.push_back(buffer);
+	dest.push_back("\0");
+}
+
+string upCase(const string& s){
+    string s2 = s;
+    for (int i=0; i<s.length(); i++)
+        s2[i] = toupper(s[i]);
+    return s2;
+}
+
+bool validLabel(const string& label){
+	if(isdigit(label.at(0)) || label.length() > 50){
+		return false;
+	}else{
+		for(auto c:label){
+			if(!isalpha(c) && !isdigit(c) && c != '_' && c != ':'){
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+bool isLabel(const string& token){
+	return token.back() == ':';
+}
+
+template <typename T>
+bool inList(const string& nome, T list){
+	for(auto l:list){
+		if(l.nome==nome){
+			return true;
+		}
+	}
+	return false;
 }

@@ -2,7 +2,10 @@
 #define PRE_PROCESSADOR_HPP
 
 #include <iostream>
+#include <vector>
+#include <string>
 #include "utils.hpp"
-#include "macro.hpp"
+
+
 
 #endif
