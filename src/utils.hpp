@@ -11,8 +11,8 @@ using namespace std;
 
 //linha da tabela de simbolos
 typedef struct TS{
-    char* nome;
-    int* valor;
+    string nome;
+    int valor;
 } TS;
 
 //linha da tabela de instruções
@@ -57,7 +57,18 @@ bool validLabel(const string& label);
 bool isLabel(const string& token);
 
 template <typename T>
-bool inList(const string& nome, T list);
+bool inList(const string& nome, list<T> list);
+
+template <typename T, typename Y>
+bool inList(const string& nome, list<T> list, Y& elem);
+
+void errLex(int line);
+
+void errSin(int line);
+
+void errSem(int line);
+
+bool validConst(string arg);
 
 #endif
 

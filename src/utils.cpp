@@ -1,27 +1,27 @@
 #include "utils.hpp"
 
-char* lerArquivo(char* nomeArquivo){
-    ifstream file;
-    file.open(nomeArquivo);
-    long fsize;
-    char* resultado;
-    int i = 0;
+// char* lerArquivo(char* nomeArquivo){
+//     ifstream file;
+//     file.open(nomeArquivo);
+//     long fsize;
+//     char* resultado;
+//     int i = 0;
 
-    fsize = file.tellg();
-    file.seekg(0, ios::end);
-    fsize = file.tellg() - fsize;
-    file.seekg(0, ios::beg);
+//     fsize = file.tellg();
+//     file.seekg(0, ios::end);
+//     fsize = file.tellg() - fsize;
+//     file.seekg(0, ios::beg);
     
-    resultado = (char*) malloc(fsize*sizeof(char));
+//     resultado = (char*) malloc(fsize*sizeof(char));
 
-    while (file >> noskipws >> resultado[i]){
-        i++;
-    }
+//     while (file >> noskipws >> resultado[i]){
+//         i++;
+//     }
     
-    file.close();
+//     file.close();
 
-    return resultado;
-}
+//     return resultado;
+// }
 
 void escreverArquivo(char* string, char* nomeArquivo){
     ofstream file;
@@ -91,7 +91,7 @@ TD novaDiretiva(char* mnemonico, int operandos, int tamanho){
     return diretiva;
 }
 
-TS novoSimbolo(char* simbolo, int* valor){
+TS novoSimbolo(string simbolo, int valor){
     TS simb;
     simb.nome = simbolo;
     simb.valor = valor;
@@ -136,11 +136,51 @@ bool isLabel(const string& token){
 }
 
 template <typename T>
-bool inList(const string& nome, T list){
+bool inList(const string& nome, list<T> list){
 	for(auto l:list){
 		if(l.nome==nome){
 			return true;
 		}
 	}
 	return false;
+}
+
+template <typename T, typename Y>
+bool inList(const string& nome, list<T> list, Y& elem){
+	for(auto l:list){
+		if(l.nome==nome){
+            elem = l;
+			return true;
+		}
+	}
+	return false;
+}
+
+void errLex(int line){
+    cout<<"Linha " << line <<": Erro lexico\n";
+}
+
+void errSin(int line){
+    cout<<"Linha " << line <<": Erro sintatico\n";
+}
+
+void errSem(int line){
+    cout<<"Linha " << line <<": Erro semantico\n";
+}
+
+bool validConst(string arg){
+    //neg
+    if(arg.at(0) == '-'){
+      arg = arg.substr(1);
+    }
+    //hex
+    if(arg.size()>1 && arg.at(0) == '0' && arg.at(1) == 'x'){
+        arg = arg.substr(2);
+    }
+
+    for(auto c:arg){
+        if(!isdigit(c))
+           return false;
+    }
+    return true;
 }
