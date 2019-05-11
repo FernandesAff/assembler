@@ -68,7 +68,6 @@ list<TD> inicializarTD(){
     tabelaDeDiretivas.push_back(novaDiretiva((char*) "SECTION", 1, 0));
     tabelaDeDiretivas.push_back(novaDiretiva((char*) "SPACE", -1, -1));
     tabelaDeDiretivas.push_back(novaDiretiva((char*) "CONST", 1, 1));
-    tabelaDeDiretivas.push_back(novaDiretiva((char*) "MACRO", 0, 0));
     tabelaDeDiretivas.push_back(novaDiretiva((char*) "END", 0, 0));
 
     return tabelaDeDiretivas;
@@ -76,7 +75,7 @@ list<TD> inicializarTD(){
 
 list<TD> inicializarTDPre(){
     list<TD> tabelaDeDiretivasPre;
-
+    tabelaDeDiretivasPre.push_back(novaDiretiva((char*) "MACRO", 0, 0));
     tabelaDeDiretivasPre.push_back(novaDiretiva((char*) "EQU", 1, 0));
     tabelaDeDiretivasPre.push_back(novaDiretiva((char*) "IF", 1, 0));
 
@@ -108,7 +107,7 @@ void split(const string& str, std::vector<string>& dest){
 		if((c == ' ' || c == '	') && buffer != "") { dest.push_back(buffer); buffer = ""; }
 	}
 	if(buffer != "") dest.push_back(buffer);
-	dest.push_back("\0");
+	dest.push_back("\n");
 }
 
 string upCase(const string& s){

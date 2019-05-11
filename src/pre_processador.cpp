@@ -1,6 +1,6 @@
 /* 
 Passagem zero do montador, retira espacos, tabs e quebras de linha desnecessarios.
-Processa as diretivas de pre-processamento EQU e IF
+Processa as diretivas de pre-processamento EQU e IF e MACRO
 Recebe o arquivo <nome>.asm contendo o codigo do usuario.
 Gera um arquivo pre-processado <nome>.pre salvo em /out 
 Retorna um vetor que relaciona as linhas dos arquivos de entrada e saida.
@@ -8,23 +8,26 @@ Retorna um vetor que relaciona as linhas dos arquivos de entrada e saida.
 Erros detectados:
 -- Nome de rotulo invalido ok
 -- Rotulo nao definido (todo IF deve ter um EQU antes) ok
--- Rotulo repetido
+-- Rotulo repetido ok
 -- Dois rotulos na mesma linha ok
--- Diretiva sem argumento
--- Diretiva com argumento invalido
+-- Diretiva sem argumento ok
+-- Diretiva com argumento invalido ok
 */
 
 #include "pre_processador.hpp"
 #include "utils.cpp"
 
 void equ(const string& label, const string& arg, list<TS>& tab, int line){
-	if(arg == "/0" || !validConst(arg)) 
+	string nLabel = label.substr(0,label.size()-1);
+	if(arg == "/0" || !validConst(arg)){ 
 		errLex(line);
-	else
-		if(inList(label,tab)) 
+	}
+	else{
+		if(inList(nLabel,tab))
 			errSem(line);
 		else	
-			tab.push_back(novoSimbolo(label.substr(0,label.size()-1), stoi(arg)));
+			tab.push_back(novoSimbolo((nLabel), stoi(arg)));
+	}
 }
 
 bool ifd(const string& label, list<TS>& tab, int line){
@@ -106,7 +109,7 @@ std::vector<int> preProc(string fileIn){
 					}
 					break;
 				}
-				else if(tokens[t]=="\0"){
+				else if(tokens[t]=="\n"){
 					if(nomeLabel != "\0") labelAnt=nomeLabel;
 				}
 				else{
@@ -114,8 +117,8 @@ std::vector<int> preProc(string fileIn){
 						fw << labelAnt << " ";
 						labelAnt = "";
 					}
-					for(auto t:tokens){
-						fw << t << " ";
+					for(int t=0;t<tokens.size()-1;t++){
+						fw << tokens[t] << " ";
 					}
 					fw << endl;
 					lines.push_back(lineCount);
