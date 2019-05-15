@@ -15,7 +15,6 @@ Erros detectados:
 */
 
 #include "pre_processador.hpp"
-#include "utils.cpp"
 
 void equ(const string& label, const string& arg, list<TS>& tab, int line){
 	string nLabel = label.substr(0,label.size()-1);

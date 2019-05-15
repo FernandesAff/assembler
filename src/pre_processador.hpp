@@ -13,4 +13,6 @@ bool ifd(const string& label, list<TS>& tab, int line);
 
 string takeFName(string fName);
 
+std::vector<int> preProc(string fileIn);
+
 #endif

@@ -4,7 +4,8 @@
 #include "src/passagem_2.hpp"
 #include "src/utils.hpp"
 
-int main(int argc, char const *argv[]){    
-    
+int main(int argc, char const *argv[]){ 
+    string fileIn = argv[1];
+    preProc(fileIn);
     return 0;
 }

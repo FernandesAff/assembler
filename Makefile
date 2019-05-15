@@ -3,9 +3,9 @@ OBJDIR=./obj/
 SRCDIR=./src/
 OUTDIR=./out/
 
-all: dir montador
+all: dir tradutor
 
-montador:$(OBJDIR)montador.o $(OBJDIR)utils.o $(OBJDIR)analisador_semantico.o $(OBJDIR)analisador_sintatico.o $(OBJDIR)macro.o $(OBJDIR)passagem_1.o $(OBJDIR)passagem_2.o $(OBJDIR)pre_processador.o
+tradutor:$(OBJDIR)montador.o $(OBJDIR)utils.o $(OBJDIR)analisador_semantico.o $(OBJDIR)analisador_sintatico.o $(OBJDIR)macro.o $(OBJDIR)passagem_1.o $(OBJDIR)passagem_2.o $(OBJDIR)pre_processador.o
 	$(CXX) $^ -o $@
 
 $(OBJDIR)montador.o:montador.cpp $(SRCDIR)pre_processador.cpp $(SRCDIR)pre_processador.hpp $(SRCDIR)passagem_1.cpp $(SRCDIR)passagem_1.hpp $(SRCDIR)passagem_2.cpp $(SRCDIR)passagem_2.hpp $(SRCDIR)utils.cpp $(SRCDIR)utils.hpp 
@@ -37,4 +37,4 @@ dir:
 	if test -d out; then echo out exists; else mkdir out;fi
 
 clean:
-	rm -f $(OBJDIR)*.o $(OUTDIR)*.txt montador
+	rm -f $(OBJDIR)*.o $(OUTDIR)*.txt tradutor
