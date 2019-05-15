@@ -22,4 +22,6 @@ string takeFName(string fName);
 
 void writeLine(string &labelAnt, const vector<string> &tokens, ofstream &fw);
 
+void preProc(string fileIn);
+
 #endif

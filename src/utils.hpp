@@ -17,7 +17,7 @@ typedef struct TS{
 
 //linha da tabela de instruções
 typedef struct TI{
-    char* nome;
+    string nome;
     int operandos;
     int codigo;
     int tamanho;
@@ -25,26 +25,22 @@ typedef struct TI{
 
 //linha da tabela de diretivas
 typedef struct TD{
-    char* nome;
+    string nome;
     int operandos;
     int tamanho;
 } TD;
 
-char* lerArquivo(char* nomeArquivo);
-
-void escreverArquivo(char* string, char* nomeArquivo);
-
 list<TI> inicializarTI();
 
-TI novaInstrucao(char* mnemonico, int operandos, int codigo, int tamanho);
+TI novaInstrucao(string mnemonico, int operandos, int codigo, int tamanho);
 
 list<TD> inicializarTD();
 
 list<TD> inicializarTDPre();
 
-TD novaDiretiva(char* mnemonico, int operandos, int tamanho);
+TD novaDiretiva(string mnemonico, int operandos, int tamanho);
 
-TS novoSimbolo(char* simbolo, int* valor);
+TS novoSimbolo(string simbolo, int valor);
 
 //Divide a string str em elementos e passa para o vetor dest, finalizando com um "/0"
 //Ignora espacos, tabs e comentarios
@@ -57,10 +53,25 @@ bool validLabel(const string& label);
 bool isLabel(const string& token);
 
 template <typename T>
-bool inList(const string& nome, list<T> list);
+bool inList(const string& nome, list<T> list){
+	for(auto l:list){
+		if(l.nome==nome){
+			return true;
+		}
+	}
+	return false;
+}
 
 template <typename T, typename Y>
-bool inList(const string& nome, list<T> list, Y& elem);
+bool inList(const string& nome, list<T> list, Y& elem){
+	for(auto l:list){
+		if(l.nome==nome){
+            elem = l;
+			return true;
+		}
+	}
+	return false;
+}
 
 void errLex(int line);
 

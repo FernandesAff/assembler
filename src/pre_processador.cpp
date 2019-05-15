@@ -13,7 +13,6 @@ Erros detectados (somente relacionados com diretivas de pre processamento):
 */
 
 #include "pre_processador.hpp"
-#include "utils.cpp"
 
 void equ(const string& label, const string& arg, list<TS>& tab, int line){
 	string nLabel = label.substr(0,label.size()-1);
@@ -81,8 +80,7 @@ void writeLine(string &labelAnt, const vector<string> &tokens, ofstream &fw, boo
 
 }
 
-//void preProc(string fileIn){
-int main(){ string fileIn = "triangulo.asm";
+void preProc(string fileIn){
 	bool wMacro = false; //Indica se esta escrevendo a definicao de uma MACRO
 	int lineCount = 0;
 	string line, labelEqu = "", nomeLabel = "", labelAnt = "", labelAntMacro = "";
