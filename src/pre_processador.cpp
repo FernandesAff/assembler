@@ -51,8 +51,7 @@ string takeFName(string fName){
 	string buff = "";
 	for(auto c:fName){
 		if(c == '.') return buff;
-		(c != '/')? buff+=c:buff="";
-		
+		(c != '/')? buff+=c:buff="";	
 	}
 }
 
@@ -65,6 +64,7 @@ void writeLine(string &labelAnt, const vector<string> &tokens, ofstream &fw, boo
 		for(int t=0;t<tokens.size()-1;t++){
 			fw << tokens[t] << " ";
 		}
+		fw << endl;
 	}else{
 		std::string* def = &macros.back().def;
 		if(labelAnt != ""){
@@ -74,6 +74,7 @@ void writeLine(string &labelAnt, const vector<string> &tokens, ofstream &fw, boo
 		for(int t=0;t<tokens.size()-1;t++){
 			def->append(tokens[t]+" ");
 		}
+		def->append("\n");		
 	}
 
 }

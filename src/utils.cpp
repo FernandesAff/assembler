@@ -65,7 +65,7 @@ TS novoSimbolo(string simbolo, int valor){
     return simb;
 }
 
-void split(const string& str, vector<string>& dest){
+void split(string& str, vector<string>& dest){
 	dest.clear();
 	string buffer{""};
 
@@ -74,8 +74,10 @@ void split(const string& str, vector<string>& dest){
 		if(c != ' ' && c != '	') buffer+=c; else
 		if((c == ' ' || c == '	') && buffer != "") { dest.push_back(buffer); buffer = ""; }
 	}
-	if(buffer != "") dest.push_back(buffer);
-	dest.push_back("\n");
+	if(buffer != ""){
+        dest.push_back(buffer);
+    }
+
 }
 
 string upCase(const string& s){

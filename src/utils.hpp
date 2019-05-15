@@ -44,7 +44,7 @@ TS novoSimbolo(string simbolo, int valor);
 
 //Divide a string str em elementos e passa para o vetor dest, finalizando com um "/0"
 //Ignora espacos, tabs e comentarios
-void split(const string& str, vector<string>& dest);
+void split(string& str, vector<string>& dest);
 
 string upCase(const string& s);
 
