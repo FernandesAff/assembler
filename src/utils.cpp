@@ -131,3 +131,12 @@ bool validConst(string arg){
     }
     return true;
 }
+
+string takeFName(string fName){
+	string buff = "";
+	for(auto c:fName){
+		if(c == '.') return buff;
+		(c != '/')? buff+=c:buff="";
+		
+	}
+}

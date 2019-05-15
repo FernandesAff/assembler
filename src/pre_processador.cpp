@@ -47,14 +47,6 @@ bool ifd(const string& label, list<TS>& tab, int line){
 	return b;
 }
 
-string takeFName(string fName){
-	string buff = "";
-	for(auto c:fName){
-		if(c == '.') return buff;
-		(c != '/')? buff+=c:buff="";	
-	}
-}
-
 void writeLine(string labelAnt, vector<string> &tokens, ofstream &fw){
 	int t;
 	if(labelAnt != ""){
@@ -129,7 +121,8 @@ string preProc(string fileIn){
 			}
 		}
 	}
-	return fileName;
+
+	return fileName+".pre";
 }
 /* 
 Ler a linha, incrementar counter e separar

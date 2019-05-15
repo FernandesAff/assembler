@@ -6,6 +6,9 @@
 
 int main(int argc, char const *argv[]){ 
     string fileIn = argv[1];
-    preProc(fileIn);
+    string preName;
+    preName = preProc(fileIn);
+    primeiraPassagem(preName);
+
     return 0;
 }

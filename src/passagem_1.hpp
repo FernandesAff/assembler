@@ -5,4 +5,6 @@
 #include "analisador_sintatico.hpp"
 #include "utils.hpp"
 
+void primeiraPassagem (string preName);
+
 #endif

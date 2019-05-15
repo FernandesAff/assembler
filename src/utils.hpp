@@ -9,6 +9,11 @@
 
 using namespace std;
 
+const string RED = "\x1b[31m";
+const string PURPLE = "\x1b[35m";
+const string COLOR_RESET = "\x1b[0m";
+
+
 //linha da tabela de simbolos
 typedef struct TS{
     string nome;
@@ -81,6 +86,6 @@ void errSem(int line);
 
 bool validConst(string arg);
 
+string takeFName(string fName);
+
 #endif
-
-
