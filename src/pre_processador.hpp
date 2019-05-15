@@ -20,8 +20,8 @@ bool ifd(const string& label, list<TS>& tab, int line);
 
 string takeFName(string fName);
 
-void writeLine(string &labelAnt, const vector<string> &tokens, ofstream &fw);
+void writeLine(string labelAnt, vector<string> &tokens, ofstream &fw);
 
-void preProc(string fileIn);
+string preProc(string fileIn);
 
 #endif

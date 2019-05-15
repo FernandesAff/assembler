@@ -74,11 +74,10 @@ void split(string& str, vector<string>& dest){
 		if(c != ' ' && c != '	') buffer+=c; else
 		if((c == ' ' || c == '	') && buffer != "") { dest.push_back(buffer); buffer = ""; }
 	}
-	if(buffer != ""){
-        dest.push_back(buffer);
-    }
-
+	if(buffer != "") dest.push_back(buffer);
+	dest.push_back("\n");
 }
+
 
 string upCase(const string& s){
     string s2 = s;

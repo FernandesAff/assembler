@@ -55,32 +55,19 @@ string takeFName(string fName){
 	}
 }
 
-void writeLine(string &labelAnt, const vector<string> &tokens, ofstream &fw, bool wMacro, list<MNDT> &macros){
-	if(!wMacro){
-		if(labelAnt != ""){
-			fw << labelAnt << " ";
-			labelAnt = "";
-		}
-		for(int t=0;t<tokens.size()-1;t++){
-			fw << tokens[t] << " ";
-		}
-		fw << endl;
-	}else{
-		std::string* def = &macros.back().def;
-		if(labelAnt != ""){
-			def->append(labelAnt+" ");
-			labelAnt = "";
-		}
-		for(int t=0;t<tokens.size()-1;t++){
-			def->append(tokens[t]+" ");
-		}
-		def->append("\n");		
+void writeLine(string labelAnt, vector<string> &tokens, ofstream &fw){
+	int t;
+	if(labelAnt != ""){
+		fw << labelAnt << " ";
+		labelAnt = "";
 	}
-
+	for(t=0;t<tokens.size()-2;t++){
+		fw << tokens[t] << " ";
+	}
+	fw << tokens[t] << endl;
 }
 
-void preProc(string fileIn){
-	bool wMacro = false; //Indica se esta escrevendo a definicao de uma MACRO
+string preProc(string fileIn){
 	int lineCount = 0;
 	string line, labelEqu = "", nomeLabel = "", labelAnt = "", labelAntMacro = "";
     list<TS> tabelaDeEqus;
@@ -102,7 +89,7 @@ void preProc(string fileIn){
 					if(nomeLabel == "" && labelAnt == ""){ 
 						nomeLabel = (tokens[t]);
 					}else{ //+ de 1 label na linha: ignora, escreve a linha e vai pra proxima
-						writeLine(labelAnt, tokens, fw, wMacro, macros);
+						writeLine(labelAnt, tokens, fw);
 						break;
 					}
 				}
@@ -121,11 +108,14 @@ void preProc(string fileIn){
 							equ(upCase(labelEqu), tokens[t+1], tabelaDeEqus, lineCount);
 							nomeLabel = "/0";
 						}
-					}else{
+					}else if(upCase(tokens[t]) == "IF"){
 						if(!ifd(upCase(tokens[t+1]), tabelaDeEqus, lineCount)){
 							getline(fr,line);
 							lineCount++;
 						}
+					}
+					else{
+
 					}
 					break;
 				}
@@ -133,34 +123,35 @@ void preProc(string fileIn){
 					if(nomeLabel != "\0") labelAnt=nomeLabel;
 				}
 				else{
-					writeLine(labelAnt, tokens, fw, wMacro, macros);
+					writeLine(labelAnt, tokens, fw);
 					break;
 				}
 			}
 		}
 	}
+	return fileName;
 }
 /* 
-	Ler a linha, incrementar counter e separar
-    nomeLabel = "";
-	Procurar Labels ou diretivas de pre-processamento na lista
-        Se elemento 0 for NULL, proxima linha
-        Se achou label, verifica validade, verifica se nomeLabel = "" e guarda em nomeLabel
-        Se achou diretiva (nao le mais essa linha):
-            Se EQU, verifica se nomeLabel != "" (se for, verifica labelAnt), verifica se existe argumento e se eh valido
-                Procura label L na tabela e, se nao achar, salvar
-                nomeLabel = "\0" (a label foi usada) 
-			SE IF, verifica se existe argumento e eh valido, verifica na tab, incrementa e pula se true	
-			SE MACRO, verifica nome valido e num de arg
-				Salvar nome e numero de variaveis na MNDT, ativar wMacro. Se labelAnt!="" guarda em labelAntMacro
-			SE END, verifica se esta em modo macro
-				Desativa wMacro e recupera labelAntMacro se !=""
-		Se fim da linha
-			Se nomeLabel != "\0" -> labelAnt = nomeLabel
-		Se nao
-			Verifica se ha labelAnt nao usada (perde a linha que a label apareceu, mas como ja eh 
-				verificado se ha erro na label aqui entao nao importa mais)
-			Copia linha, salva o numero da linha e prox linha
+Ler a linha, incrementar counter e separar
+nomeLabel = "";
+Procurar Labels ou diretivas de pre-processamento na lista
+	Se elemento 0 for NULL, proxima linha
+	Se achou label, verifica validade, verifica se nomeLabel = "" e guarda em nomeLabel
+	Se achou diretiva (nao le mais essa linha):
+		Se EQU, verifica se nomeLabel != "" (se for, verifica labelAnt), verifica se existe argumento e se eh valido
+			Procura label L na tabela e, se nao achar, salvar
+			nomeLabel = "\0" (a label foi usada) 
+		SE IF, verifica se existe argumento e eh valido, verifica na tab, incrementa e pula se true	
+		SE MACRO, verifica nome valido e num de arg
+			Salvar nome e numero de variaveis na MNDT, ativar wMacro. Se labelAnt!="" guarda em labelAntMacro
+		SE END, verifica se esta em modo macro
+			Desativa wMacro e recupera labelAntMacro se !=""
+	Se fim da linha
+		Se nomeLabel != "\0" -> labelAnt = nomeLabel
+	Se nao
+		Verifica se ha labelAnt nao usada (perde a linha que a label apareceu, mas como ja eh 
+			verificado se ha erro na label aqui entao nao importa mais)
+		Copia linha, salva o numero da linha e prox linha
 			
 	*/
 
