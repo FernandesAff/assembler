@@ -1,7 +1,6 @@
 CXX=g++ -std=c++17
 OBJDIR=./obj/
 SRCDIR=./src/
-OUTDIR=./out/
 
 all: dir tradutor
 
@@ -34,7 +33,6 @@ $(OBJDIR)utils.o:$(SRCDIR)utils.cpp $(SRCDIR)utils.hpp
 
 dir:
 	if test -d obj; then echo obj exists; else mkdir obj;fi
-	if test -d out; then echo out exists; else mkdir out;fi
 
 clean:
-	rm -f $(OBJDIR)*.o $(OUTDIR)*.txt tradutor
+	rm -f $(OBJDIR)*.o *.pre tradutor
