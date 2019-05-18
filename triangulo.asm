@@ -1,4 +1,11 @@
 	TRIANGULO: EQU 1
+	
+L: MACRO &a &b &d
+&a aqui
+esta &b
+as coisas &d
+END
+	
 SECTION TEXTO
 		INPUT		B
 		INPUT		H

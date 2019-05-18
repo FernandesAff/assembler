@@ -14,7 +14,15 @@ Erros detectados (somente relacionados com diretivas de pre processamento):
 
 #include "pre_processador.hpp"
 
-void equ(const string& label, const string& arg, list<TS>& tab, int line){
+MNDT novaMacro(string simbolo, int valor, string def){
+    MNDT macro;
+    macro.nome = simbolo;
+    macro.arg = valor;
+	macro.def = def;
+    return macro;
+}
+
+void equ(const string& label, string arg, list<TS>& tab, int line){
 	string nLabel = label.substr(0,label.size()-1);
 	if(arg == "/0" || !validConst(arg) || !validLabel(label)){ 
 		errLex(line); //argumento ausente ou argumento invalido ou label invalida
@@ -27,9 +35,10 @@ void equ(const string& label, const string& arg, list<TS>& tab, int line){
 	}
 }
 
-bool ifd(const string& label, list<TS>& tab, int line){
+bool ifd(string label, list<TS>& tab, int line){
 	bool b;
 	TS simbol;
+	label = label.substr(0,label.size()-1);
 	if(label == "\0" || !validLabel(label)){
 		errLex(line); //label ausente ou invalida
 		b = true;
@@ -53,30 +62,63 @@ void writeLine(string labelAnt, vector<string> &tokens, ofstream &fw){
 		fw << labelAnt << " ";
 		labelAnt = "";
 	}
-	for(t=0;t<tokens.size()-2;t++){
-		fw << tokens[t] << " ";
+	fw << tokens[0];
+	for(t=1;t<tokens.size();t++){
+		fw << " " << tokens[t];
 	}
-	fw << tokens[t] << endl;
+}
+
+void writeMacroDef(MNDT* macroElem, vector<string> tokens){
+	macroElem->def += tokens[0];
+	for(int t=1;t<tokens.size();t++){
+		macroElem->def += " ";
+		macroElem->def += tokens[t];
+	}
+
+}
+
+void subArgsMacro(const vector<string> &argMacro, vector<string> &tokens){
+	char ic;
+	for(int t = 0; t<tokens.size();t++){
+		ic = '1';
+		for(int i=0;i<argMacro.size();i++){
+			if(tokens[t] == argMacro[i] || tokens[t] == argMacro[i]+"\n"){
+				tokens[t] = "#";
+				tokens[t] += ic;
+				if(t == tokens.size()-2){
+					tokens[t] += "\n";
+				}
+			}
+			ic++;
+		}
+	}
 }
 
 string preProc(string fileIn){
+	bool wMacro = false, macroErr = false;
 	int lineCount = 0;
-	string line, labelEqu = "", nomeLabel = "", labelAnt = "", labelAntMacro = "";
+	string line, labelEqu = "", nomeLabel = "", labelAnt = "";
     list<TS> tabelaDeEqus;
 	list<TD> tabelaDirPre = inicializarTDPre();
     vector<string> tokens;
-	list<MNDT> macros;
-
+	vector<MNDT> macros;
+	MNDT* macroElem;
     ifstream fr(fileIn);
 	string fileName = takeFName(fileIn);
 	ofstream fw(fileName+".pre");
-    
+
+	string nameMacro, labelAntMacro = "";
+	int numParamMacro, tm;
+	vector<string> argMacro; 
+
 	while(getline(fr,line)){
-		lineCount++;
+	// 	if(!wMacro) 
+	// 		lineCount++; //No modo macro nao conta linha
 		split(line,tokens);
-		if(tokens[0] != "\0"){
+		if(tokens[0] != "\n"){
 			nomeLabel = "";
 			for(int t=0;t<tokens.size();t++){
+				//LABEL
 				if(isLabel(tokens[t])){
 					if(nomeLabel == "" && labelAnt == ""){ 
 						nomeLabel = (tokens[t]);
@@ -106,8 +148,80 @@ string preProc(string fileIn){
 							lineCount++;
 						}
 					}
-					else{
+					// //Se MACRO
+					else if(upCase(tokens[t]) == "MACRO" || upCase(tokens[t]) == "MACRO\n"){
+						//Verifica nome
+						if(labelAnt != ""){
+							nameMacro = labelAnt;
+							labelAnt = "";
+						}else if(nomeLabel != ""){
+							nameMacro = nomeLabel;
+						}else{
+							errSin(lineCount);
+							macroErr = true;
+							nameMacro = ":";
+						}
+						
+						if(!validLabel(nameMacro)){
+							errLex(lineCount);
+							macroErr = true;
+						}
+						//Verifica duplicidade
+						if(inList(nameMacro, macros)){
+							errSem(lineCount);
+							macroErr = true;
+						}
+						//Verifica argumentos
+						argMacro.clear();
+						tm = t+1;
+						while(tokens[tm] != "\n"){
+							if(tokens[tm].front() != '&' || t-tm>3){
+								errSin(lineCount);
+								macroErr = true;
+								break;
+							}
+							argMacro.push_back(tokens[tm]);
+							tm++;
+						}
+						//Pula a macro em caso de erro
+						if(macroErr){
+							cout << "erro\n";
+							macroErr = false;
+							do{
+								lineCount++;
+								getline(fr,line);
+								split(line,tokens);
+							}while(upCase(tokens[0]) == "END" || upCase(tokens[0]) == "END\n");
+							break;
+						}
 
+						labelAntMacro = labelAnt; // Salva o contexto
+						// Grava a macro na tabela
+						macros.push_back(novaMacro("", argMacro.size()-1, ""));
+						macroElem = &macros.back();
+						do{
+							lineCount++;
+							getline(fr,line);
+							split(line,tokens);
+
+							if(inList(upCase(tokens[0]), macros)){
+								cout << "achou" << endl;
+							}
+
+							subArgsMacro(argMacro, tokens);
+
+							writeMacroDef(macroElem, tokens);
+
+							//Macro sem END
+							if(fr.eof()){
+								errSem(lineCount);
+								break;
+							}
+							}while(upCase(tokens[0]) != "END" && upCase(tokens[0]) != "END\n");
+					}
+					else{ //END (mas nao esta na lista de DIR)
+						wMacro = false;
+						labelAnt = labelAntMacro; // Retoma o contexto
 					}
 					break;
 				}
@@ -121,7 +235,7 @@ string preProc(string fileIn){
 			}
 		}
 	}
-
+	// fw << macros[0].def;
 	return fileName+".pre";
 }
 /* 
@@ -148,3 +262,23 @@ Procurar Labels ou diretivas de pre-processamento na lista
 			
 	*/
 
+/* 
+Se MACRO, verifica nome, verifica duplicidade e num de args (Em caso de erro tem que pular a macro)
+	Salva labelAnt
+	Salva os args
+	Salva a definicao: (conta linhas, ate END, mas erro se nao tem END)
+		Se nomeMacro
+			Expande macro (nao como abaixo, so copia mesmo)
+		Se arg
+			Substitui por #
+		Se label, diretiva ou outro: faz nada
+	Salva o nome e num de args (tem que ser depois pra evitar recursao)
+Se nomeMacro, verifica nome, se existe, num de args
+	wMacro = true (nao conta linhas)
+	Salva os args
+	Processa as linhas normalmentte (como aproveitar oq ja existe?)
+Se END
+	volta labelAnt
+	wMacro = false
+
+*/

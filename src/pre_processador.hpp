@@ -3,8 +3,8 @@
 
 #include <iostream>
 #include <vector>
-#include <string>
 #include "utils.hpp"
+#include <string>
 
 //Nome, numero de argumentos e definicao da macro
 typedef struct MNDT{
@@ -13,12 +13,18 @@ typedef struct MNDT{
     std::string def;
 } MNDT;
 
-void equ(const string& label, const string& arg, list<TS>& tab, int line);
+TS novaMacro(string simbolo, int valor);
+
+void equ(const string& label, string arg, list<TS>& tab, int line);
 
 //se false, pula prox linha. Em caso de erro retorna true
-bool ifd(const string& label, list<TS>& tab, int line);
+bool ifd(string label, list<TS>& tab, int line);
 
 void writeLine(string labelAnt, vector<string> &tokens, ofstream &fw);
+
+void writeMacroDef(MNDT* macroElem, vector<string> tokens);
+
+void subArgsMacro(const vector<string> &argMacro, vector<string> &tokens);
 
 string preProc(string fileIn);
 

@@ -61,7 +61,7 @@ bool validLabel(const string& label);
 bool isLabel(const string& token);
 
 template <typename T>
-bool inList(const string& nome, list<T> list){
+bool inList(const string& nome, T list){
 	for(auto l:list){
 		if(upCase(l.nome)==upCase(nome)){
 			return true;
