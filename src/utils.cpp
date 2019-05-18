@@ -68,11 +68,10 @@ TS novoSimbolo(string simbolo, int valor){
 void split(string& str, vector<string>& dest){
 	dest.clear();
 	string buffer{""};
-
 	for(auto c:str){
         if(c == ';') break;
-		if(c != ' ' && c != '	') buffer+=c; else
-		if((c == ' ' || c == '	') && buffer != "") { dest.push_back(buffer); buffer = ""; }
+		if(c != ' ' && c != '	' && c != '\r' && c != '\n') buffer+=c; else
+		if((c == ' ' || c == '	' || c != '\r' || c != '\n') && buffer != "") { dest.push_back(buffer); buffer = ""; }
 	}
 	if(buffer != "") dest.push_back(buffer);
 	dest.push_back("\n");

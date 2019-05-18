@@ -12,6 +12,9 @@ using namespace std;
 const string RED = "\x1b[31m";
 const string PURPLE = "\x1b[35m";
 const string COLOR_RESET = "\x1b[0m";
+const string ERRO_LEXICO_MSG = "Erro léxico";
+const string ERRO_SINTATICO_MSG = "Erro sintático";
+const string ERRO_SEMANTICO_MSG = "Erro semântico";
 
 
 //linha da tabela de simbolos
@@ -60,7 +63,7 @@ bool isLabel(const string& token);
 template <typename T>
 bool inList(const string& nome, list<T> list){
 	for(auto l:list){
-		if(l.nome==nome){
+		if(upCase(l.nome)==upCase(nome)){
 			return true;
 		}
 	}
@@ -70,7 +73,7 @@ bool inList(const string& nome, list<T> list){
 template <typename T, typename Y>
 bool inList(const string& nome, list<T> list, Y& elem){
 	for(auto l:list){
-		if(l.nome==nome){
+		if(upCase(l.nome)==upCase(nome)){
             elem = l;
 			return true;
 		}

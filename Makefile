@@ -2,7 +2,7 @@ CXX=g++ -std=c++17
 OBJDIR=./obj/
 SRCDIR=./src/
 
-all: dir tradutor
+all: clean dir tradutor
 
 tradutor:$(OBJDIR)montador.o $(OBJDIR)utils.o $(OBJDIR)analisador_semantico.o $(OBJDIR)analisador_sintatico.o $(OBJDIR)macro.o $(OBJDIR)passagem_1.o $(OBJDIR)passagem_2.o $(OBJDIR)pre_processador.o
 	$(CXX) $^ -o $@
