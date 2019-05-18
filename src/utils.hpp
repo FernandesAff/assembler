@@ -71,7 +71,7 @@ bool inList(const string& nome, T list){
 }
 
 template <typename T, typename Y>
-bool inList(const string& nome, list<T> list, Y& elem){
+bool inList(const string& nome, T list, Y& elem){
 	for(auto l:list){
 		if(upCase(l.nome)==upCase(nome)){
             elem = l;

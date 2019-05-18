@@ -23,23 +23,21 @@ MNDT novaMacro(string simbolo, int valor, string def){
 }
 
 void equ(const string& label, string arg, list<TS>& tab, int line){
-	string nLabel = label.substr(0,label.size()-1);
-	if(arg == "/0" || !validConst(arg) || !validLabel(label)){ 
+	if(arg == "/n" || !validConst(arg) || !validLabel(label)){ 
 		errLex(line); //argumento ausente ou argumento invalido ou label invalida
 	}
 	else{
-		if(inList(nLabel,tab))
+		if(inList(label,tab))
 			errSem(line);
 		else	
-			tab.push_back(novoSimbolo((nLabel), stoi(arg)));
+			tab.push_back(novoSimbolo((label), stoi(arg)));
 	}
 }
 
 bool ifd(string label, list<TS>& tab, int line){
 	bool b;
 	TS simbol;
-	label = label.substr(0,label.size()-1);
-	if(label == "\0" || !validLabel(label)){
+	if(label == "\n" || !validLabel(label)){
 		errLex(line); //label ausente ou invalida
 		b = true;
 	}else{
@@ -63,18 +61,17 @@ void writeLine(string labelAnt, vector<string> &tokens, ofstream &fw){
 		labelAnt = "";
 	}
 	fw << tokens[0];
-	for(t=1;t<tokens.size();t++){
+	for(t=1;t<tokens.size()-1;t++){
 		fw << " " << tokens[t];
 	}
 }
 
 void writeMacroDef(MNDT* macroElem, vector<string> tokens){
 	macroElem->def += tokens[0];
-	for(int t=1;t<tokens.size();t++){
+	for(int t=1;t<tokens.size()-1;t++){
 		macroElem->def += " ";
 		macroElem->def += tokens[t];
 	}
-
 }
 
 void subArgsMacro(const vector<string> &argMacro, vector<string> &tokens){
@@ -85,9 +82,6 @@ void subArgsMacro(const vector<string> &argMacro, vector<string> &tokens){
 			if(tokens[t] == argMacro[i] || tokens[t] == argMacro[i]+"\n"){
 				tokens[t] = "#";
 				tokens[t] += ic;
-				if(t == tokens.size()-2){
-					tokens[t] += "\n";
-				}
 			}
 			ic++;
 		}
@@ -103,6 +97,7 @@ string preProc(string fileIn){
     vector<string> tokens;
 	vector<MNDT> macros;
 	MNDT* macroElem;
+	MNDT macElem;
     ifstream fr(fileIn);
 	string fileName = takeFName(fileIn);
 	ofstream fw(fileName+".pre");
@@ -112,8 +107,8 @@ string preProc(string fileIn){
 	vector<string> argMacro; 
 
 	while(getline(fr,line)){
-	// 	if(!wMacro) 
-	// 		lineCount++; //No modo macro nao conta linha
+		if(!wMacro) 
+			lineCount++; //No modo macro nao conta linha
 		split(line,tokens);
 		if(tokens[0] != "\n"){
 			nomeLabel = "";
@@ -122,8 +117,11 @@ string preProc(string fileIn){
 				if(isLabel(tokens[t])){
 					if(nomeLabel == "" && labelAnt == ""){ 
 						nomeLabel = (tokens[t]);
+						nomeLabel = nomeLabel.substr(0,nomeLabel.size()-1);
 					}else{ //+ de 1 label na linha: ignora, escreve a linha e vai pra proxima
 						writeLine(labelAnt, tokens, fw);
+						if(!fr.eof())
+							fw << "\n";
 						break;
 					}
 				}
@@ -149,13 +147,14 @@ string preProc(string fileIn){
 						}
 					}
 					// //Se MACRO
-					else if(upCase(tokens[t]) == "MACRO" || upCase(tokens[t]) == "MACRO\n"){
+					else if(upCase(tokens[t]) == "MACRO"){
 						//Verifica nome
-						if(labelAnt != ""){
-							nameMacro = labelAnt;
-							labelAnt = "";
-						}else if(nomeLabel != ""){
+						if(nomeLabel != ""){
 							nameMacro = nomeLabel;
+							labelAnt = "";
+						}else if(labelAnt != ""){
+							nameMacro = labelAnt;
+							nameMacro = nameMacro.substr(0,nameMacro.size()-1);
 						}else{
 							errSin(lineCount);
 							macroErr = true;
@@ -185,27 +184,25 @@ string preProc(string fileIn){
 						}
 						//Pula a macro em caso de erro
 						if(macroErr){
-							cout << "erro\n";
 							macroErr = false;
 							do{
 								lineCount++;
 								getline(fr,line);
 								split(line,tokens);
-							}while(upCase(tokens[0]) == "END" || upCase(tokens[0]) == "END\n");
+							}while(upCase(tokens[0]) == "END");
 							break;
 						}
 
 						labelAntMacro = labelAnt; // Salva o contexto
 						// Grava a macro na tabela
-						macros.push_back(novaMacro("", argMacro.size()-1, ""));
+						macros.push_back(novaMacro("", argMacro.size(), ""));
 						macroElem = &macros.back();
-						do{
-							lineCount++;
-							getline(fr,line);
-							split(line,tokens);
-
-							if(inList(upCase(tokens[0]), macros)){
-								cout << "achou" << endl;
+						lineCount++;
+						getline(fr,line);
+						split(line,tokens);
+						while(upCase(tokens[0]) != "END"){
+							if(inList(upCase(tokens[0]), macros, macElem)){
+								tokens[0] = macElem.def;
 							}
 
 							subArgsMacro(argMacro, tokens);
@@ -217,7 +214,16 @@ string preProc(string fileIn){
 								errSem(lineCount);
 								break;
 							}
-							}while(upCase(tokens[0]) != "END" && upCase(tokens[0]) != "END\n");
+							lineCount++;
+							getline(fr,line);
+							split(line,tokens);
+							
+							if(upCase(tokens[0]) != "END"){
+								macroElem->def += '\n';
+							}
+						}
+
+							macros.back().nome = nameMacro;
 					}
 					else{ //END (mas nao esta na lista de DIR)
 						wMacro = false;
@@ -230,12 +236,13 @@ string preProc(string fileIn){
 				}
 				else{
 					writeLine(labelAnt, tokens, fw);
+					if(!fr.eof())
+						fw << "\n";
 					break;
 				}
 			}
 		}
 	}
-	// fw << macros[0].def;
 	return fileName+".pre";
 }
 /* 

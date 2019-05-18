@@ -1,9 +1,15 @@
 	TRIANGULO: EQU 1
-	
+
+A: MACRO
+teste
+teste teste
+END
+
 L: MACRO &a &b &d
 &a aqui
 esta &b
 as coisas &d
+A
 END
 	
 SECTION TEXTO

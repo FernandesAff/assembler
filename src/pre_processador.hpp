@@ -10,7 +10,7 @@
 typedef struct MNDT{
     string nome;
     int arg;
-    std::string def;
+    string def;
 } MNDT;
 
 TS novaMacro(string simbolo, int valor);
