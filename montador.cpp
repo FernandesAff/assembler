@@ -8,7 +8,7 @@ int main(int argc, char const *argv[]){
     string fileIn = argv[1];
     string preName;
     preName = preProc(fileIn);
-    // primeiraPassagem(preName);
+    primeiraPassagem(preName);
 
     return 0;
 }

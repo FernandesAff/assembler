@@ -12,23 +12,13 @@ void labelAnalyzer(string label, int lc, int pc, int* labelCounter){
     } else if(sameLineLabel(*labelCounter)){
         printError(ERRO_SINTATICO_MSG, lc);
     } else{
-        tabSimbolos.push_back(novoSimbolo(label.substr(0, label.size()-1), pc));
+        tabSimbolos.push_back(novoSimbolo(label.substr(0, label.size()-1), pc, false));
     }
     labelCounter++;
 }
 
 bool sameLineLabel(int labelCounter){
     return (labelCounter > 0 ?  true : false);
-}
-
-bool textAnalyzer(string token, int counter){
-    if(counter == 0){
-        return (upCase(token).compare("SECTION") == 0 ? true : false);
-    }else if(counter == 1){
-        return (upCase(token).compare("TEXT") == 0 ? true : false);
-    }else{
-        return false;
-    }
 }
 
 void instAnalyzer(TI inst, vector<string> tokens, int lc, int *pc){
@@ -70,6 +60,7 @@ int dirAnalyzer(TD dir, vector<string> tokens, int lc){
         if(tokens.size() == 3){
             if(validConst(tokens[1])){
                 increment++;
+                tabSimbolos.back().cte = true;
             }else{
                printError(ERRO_SINTATICO_MSG, lc); 
             }

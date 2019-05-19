@@ -4,4 +4,10 @@
 #include <iostream>
 #include "utils.hpp"
 
+void instAnalyzerSem(TI inst, vector<string> tokens, int lc);
+
+void dirAnalyzerSem(TD dir, vector<string> tokens, int lc);
+
+bool textAnalyzer(vector<string> token);
+
 #endif

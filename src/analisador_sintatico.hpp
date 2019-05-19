@@ -12,8 +12,6 @@ void labelAnalyzer(string label, int lc, int pc, int* labelCounter);
 
 bool sameLineLabel(int labelCounter);
 
-bool textAnalyzer(string token, int counter);
-
 void instAnalyzer(TI inst, vector<string> tokens, int lc, int *pc);
 
 int dirAnalyzer(TD dir, vector<string> tokens, int lc);

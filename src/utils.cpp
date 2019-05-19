@@ -65,6 +65,14 @@ TS novoSimbolo(string simbolo, int valor){
     return simb;
 }
 
+TS novoSimbolo(string simbolo, int valor, bool cte){
+    TS simb;
+    simb.nome = simbolo;
+    simb.valor = valor;
+    simb.cte = cte;
+    return simb;
+}
+
 void split(string& str, vector<string>& dest){
 	dest.clear();
 	string buffer{""};

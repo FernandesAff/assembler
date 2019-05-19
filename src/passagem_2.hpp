@@ -3,6 +3,11 @@
 
 #include <iostream>
 #include "analisador_semantico.hpp"
+#include "analisador_sintatico.hpp"
 #include "utils.hpp"
+
+void segundaPassagem(string preName);
+
+void analyze (vector<string> tokens, int lc);
 
 #endif

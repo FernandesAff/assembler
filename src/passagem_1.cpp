@@ -17,9 +17,9 @@ void primeiraPassagem (string preName){
         labelCounter = 0;
     }
 
-    // for(TS t:tabSimbolos){
-    //     cout << t.nome << " " << t.valor << endl; 
-    // }
+    for(TS t:tabSimbolos){
+        cout << t.nome << " " << t.valor << " " << t.cte << endl; 
+    }
     
 }
 

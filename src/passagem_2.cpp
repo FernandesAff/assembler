@@ -1,28 +1,36 @@
 #include "passagem_2.hpp"
 
 void segundaPassagem(string preName){
-    // list<TD> tabDiretivas = inicializarTD();
-    // list<TI> tabInstrucoes = inicializarTI();
-    // string line;
-    // vector<string> tokens;
-    // ifstream fr(preName);
-    // int labelCounter = 0; //
-    // int lc = 1;
-    // int pc = 0;
+    string line;
+    vector<string> tokens;
+    ifstream fr(preName);
+    int lc = 1;
+    int pc = 0;
 
-    // while(getline(fr,line)){
-    //     split(line,tokens);
-    //     if(tokens[0] != "\0"){
-    //         for(int t=0;t<tokens.size();t++){
-    //             cout << tokens.size()<< endl;
-    //             if(lc = 1){
-    //                 if(!textAnalyzer(tokens[t], t)) printError(ERRO_SEMANTICO_MSG, lc);
-    //             }else if(isLabel(tokens[t])){
-    //                 labelAnalyzer(tokens[t], lc, pc, &labelCounter);
-    //             }
-    //         }
-    //     }
-    //     lc++;
-    //     labelCounter = 0;
-    // }
+    while(getline(fr,line)){
+        if(lc == 1) 
+        split(line,tokens);
+        analyze(tokens, lc);
+        lc++;
+    }    
+}
+
+void analyze (vector<string> tokens, int lc){
+    list<TD> tabDiretivas = inicializarTD();
+    list<TI> tabInstrucoes = inicializarTI();
+    if(isLabel(tokens[0])){
+        if(tokens.size() > 2){
+            vector<string> newTokens;
+            copyVector(1, tokens.size(), tokens, &newTokens);
+            analyze(newTokens, lc);
+        }
+    }else if(inList(tokens[0], tabInstrucoes)){
+        TI inst;
+        inList(tokens[0], tabInstrucoes, inst);
+        instAnalyzerSem(inst, tokens, lc);
+    }else if(inList(tokens[0], tabDiretivas)){
+        TD dir;
+        inList(tokens[0], tabDiretivas, dir);
+        dirAnalyzerSem(dir, tokens, lc);
+    }
 }

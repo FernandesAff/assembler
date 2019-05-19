@@ -27,6 +27,7 @@ enum Tipos {
 typedef struct TS{
     string nome;
     int valor;
+    bool cte;
 } TS;
 
 //linha da tabela de instruções
@@ -55,6 +56,8 @@ list<TD> inicializarTDPre();
 TD novaDiretiva(string mnemonico, int operandos, int tamanho);
 
 TS novoSimbolo(string simbolo, int valor);
+
+TS novoSimbolo(string simbolo, int valor, bool cte);
 
 //Divide a string str em elementos e passa para o vetor dest, finalizando com um "/0"
 //Ignora espacos, tabs e comentarios
