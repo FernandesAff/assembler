@@ -89,7 +89,7 @@ void subArgsMacro(const vector<string> &argMacro, vector<string> &tokens){
 }
 
 string preProc(string fileIn){
-	bool wMacro = false, macroErr = false;
+	bool wMacro = false, macroErr = false, theEnd;
 	int lineCount = 0;
 	string line, labelEqu = "", nomeLabel = "", labelAnt = "";
     list<TS> tabelaDeEqus;
@@ -101,12 +101,15 @@ string preProc(string fileIn){
     ifstream fr(fileIn);
 	string fileName = takeFName(fileIn);
 	ofstream fw(fileName+".pre");
+	fstream macroF;
 
-	string nameMacro, labelAntMacro = "";
+	string nameMacro, macroWrite;
 	int numParamMacro, tm;
 	vector<string> argMacro; 
 
-	while(getline(fr,line)){
+	theEnd = !getline(fr,line);
+
+	while(!theEnd){
 		if(!wMacro) 
 			lineCount++; //No modo macro nao conta linha
 		split(line,tokens);
@@ -148,6 +151,7 @@ string preProc(string fileIn){
 					}
 					// //Se MACRO
 					else if(upCase(tokens[t]) == "MACRO"){
+						macroErr = false;
 						//Verifica nome
 						if(nomeLabel != ""){
 							nameMacro = nomeLabel;
@@ -189,11 +193,10 @@ string preProc(string fileIn){
 								lineCount++;
 								getline(fr,line);
 								split(line,tokens);
-							}while(upCase(tokens[0]) == "END");
+							}while(upCase(tokens[0]) != "END");
 							break;
 						}
 
-						labelAntMacro = labelAnt; // Salva o contexto
 						// Grava a macro na tabela
 						macros.push_back(novaMacro("", argMacro.size(), ""));
 						macroElem = &macros.back();
@@ -223,13 +226,30 @@ string preProc(string fileIn){
 							}
 						}
 
-							macros.back().nome = nameMacro;
-					}
-					else{ //END (mas nao esta na lista de DIR)
-						wMacro = false;
-						labelAnt = labelAntMacro; // Retoma o contexto
+						macros.back().nome = nameMacro;
 					}
 					break;
+				}
+				else if(inList(tokens[t],macros,macElem)){
+					//verificar argumentos
+					argMacro.clear();
+					tm = t+1;
+					while(tokens[tm] != "\n"){
+						argMacro.push_back(tokens[tm]);
+						tm++;
+					}
+					if(t-tm>3){
+						errSin(lineCount);
+					}else
+					if(t-tm>macElem.arg){
+						errSem(lineCount);
+					}else{
+						wMacro = true;
+						macroF.open("mac.txt",std::ofstream::trunc | std::ofstream::out);
+						macroF << macElem.def;
+						macroF.close();
+						macroF.open("mac.txt");						
+					}
 				}
 				else if(tokens[t]=="\n"){
 					if(nomeLabel != "\0") labelAnt=nomeLabel;
@@ -240,6 +260,17 @@ string preProc(string fileIn){
 						fw << "\n";
 					break;
 				}
+			}
+		}
+		if(wMacro){
+			if(!getline(macroF,line)){
+				wMacro = false;
+				macroF.close();
+			}
+		}
+		if(!wMacro){
+			if(!getline(fr,line)){
+				theEnd = true;
 			}
 		}
 	}

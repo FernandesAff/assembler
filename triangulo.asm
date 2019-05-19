@@ -13,6 +13,7 @@ A
 END
 	
 SECTION TEXTO
+A
 		INPUT		B
 		INPUT		H
 		LOAD		B
