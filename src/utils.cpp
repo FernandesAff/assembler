@@ -71,12 +71,11 @@ void split(string& str, vector<string>& dest){
 	for(auto c:str){
         if(c == ';') break;
 		if(c != ' ' && c != '	' && c != '\r' && c != '\n') buffer+=c; else
-		if((c == ' ' || c == '	' || c != '\r' || c != '\n') && buffer != "") { dest.push_back(buffer); buffer = ""; }
+		if(buffer != "") { dest.push_back(buffer); buffer = ""; }
 	}
 	if(buffer != "") dest.push_back(buffer);
 	dest.push_back("\n");
 }
-
 
 string upCase(const string& s){
     string s2 = s;

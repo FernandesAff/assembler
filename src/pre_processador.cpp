@@ -79,9 +79,14 @@ void subArgsMacro(const vector<string> &argMacro, vector<string> &tokens){
 	for(int t = 0; t<tokens.size();t++){
 		ic = '1';
 		for(int i=0;i<argMacro.size();i++){
-			if(tokens[t] == argMacro[i] || tokens[t] == argMacro[i]+"\n"){
+			if(tokens[t] == argMacro[i]){
 				tokens[t] = "#";
 				tokens[t] += ic;
+			}else
+			if(tokens[t] == argMacro[i]+","){
+				tokens[t] = "#";
+				tokens[t] += ic;
+				tokens[t] += ",";
 			}
 			ic++;
 		}
@@ -105,14 +110,26 @@ string preProc(string fileIn){
 
 	string nameMacro, macroWrite;
 	int numParamMacro, tm;
-	vector<string> argMacro; 
+	vector<string> argMacro, argMacroIn; 
 
 	theEnd = !getline(fr,line);
 
 	while(!theEnd){
-		if(!wMacro) 
-			lineCount++; //No modo macro nao conta linha
 		split(line,tokens);
+		if(!wMacro){
+			lineCount++; //No modo macro nao conta linha
+		}else{
+			for(int t=0;t<tokens.size();t++){
+				if(tokens[t].front()=='#'){
+					if(tokens[t].back() == ','){
+						tokens[t] = argMacro[stoi(tokens[t].substr(1,2))-1];
+						tokens[t] += ',';
+					}else{
+						tokens[t] = argMacro[stoi(tokens[t].substr(1,2))-1];
+					}
+				}
+			}
+		}
 		if(tokens[0] != "\n"){
 			nomeLabel = "";
 			for(int t=0;t<tokens.size();t++){
@@ -145,13 +162,25 @@ string preProc(string fileIn){
 						}
 					}else if(upCase(tokens[t]) == "IF"){
 						if(!ifd(upCase(tokens[t+1]), tabelaDeEqus, lineCount)){
-							getline(fr,line);
-							lineCount++;
+							if(wMacro){
+								if(!getline(macroF,line)){
+									wMacro = false;
+									macroF.close();
+								}
+							}
+							if(!wMacro){
+								if(!getline(fr,line)){
+									theEnd = true;
+								}
+							}
 						}
 					}
 					// //Se MACRO
 					else if(upCase(tokens[t]) == "MACRO"){
 						macroErr = false;
+						if(wMacro){
+							break;
+						}
 						//Verifica nome
 						if(nomeLabel != ""){
 							nameMacro = nomeLabel;
@@ -178,7 +207,14 @@ string preProc(string fileIn){
 						argMacro.clear();
 						tm = t+1;
 						while(tokens[tm] != "\n"){
-							if(tokens[tm].front() != '&' || t-tm>3){
+							if(tokens[tm].back() != ',' && tokens[tm+1] != "\n"){
+								errSin(lineCount);
+								macroErr = true;
+								break;
+							}else if(tokens[tm].back() == ','){
+								tokens[tm].substr(0,tokens[tm].size()-1).swap(tokens[tm]);
+							}else
+							if(tokens[tm].front() != '&' || tm-t>3){
 								errSin(lineCount);
 								macroErr = true;
 								break;
@@ -205,7 +241,43 @@ string preProc(string fileIn){
 						split(line,tokens);
 						while(upCase(tokens[0]) != "END"){
 							if(inList(upCase(tokens[0]), macros, macElem)){
-								tokens[0] = macElem.def;
+								macroErr = false;
+								//Expandir macro na macro
+								//Verificar args
+								argMacroIn.clear();
+								tm = 1;
+								while(tokens[tm] != "\n"){
+									if(tokens[tm].back() != ',' && tokens[tm+1] != "\n"){
+										errSin(lineCount);
+										macroErr = true;
+										break;
+									}else if(tokens[tm].back() == ','){
+										tokens[tm].substr(0,tokens[tm].size()-1).swap(tokens[tm]);
+									}
+									argMacroIn.push_back(tokens[tm]);
+									tokens[tm] = "";
+									tm++;
+								}
+								if(tm>4){
+									errSin(lineCount);
+									macroErr = true;
+								}else
+								if(tm != macElem.arg+1){
+									errSem(lineCount);
+									macroErr = true;
+								}
+								//Substituir args
+								if(!macroErr){
+									tokens[0] = "";
+									for(int t=0;t<macElem.def.size();t++){
+										if(macElem.def[t]=='#'){
+											t++;
+											tokens[0] += argMacroIn[(int)(macElem.def[t]-'0')-1];
+										}else{
+											tokens[0] += macElem.def[t];
+										}
+									}
+								}
 							}
 
 							subArgsMacro(argMacro, tokens);
@@ -230,25 +302,32 @@ string preProc(string fileIn){
 					}
 					break;
 				}
-				else if(inList(tokens[t],macros,macElem)){
+				else if(inList(tokens[t],macros,macElem) && !wMacro){
 					//verificar argumentos
 					argMacro.clear();
 					tm = t+1;
 					while(tokens[tm] != "\n"){
+						if(tokens[tm].back() != ',' && tokens[tm+1] != "\n"){
+							tm = 100; //joga erro sintatico
+							break;
+						}else if(tokens[tm].back() == ','){
+							tokens[tm].substr(0,tokens[tm].size()-1).swap(tokens[tm]);
+						}
 						argMacro.push_back(tokens[tm]);
 						tm++;
 					}
-					if(t-tm>3){
+					if(tm-t>4){
 						errSin(lineCount);
 					}else
-					if(t-tm>macElem.arg){
+					if(tm-t != macElem.arg+1){
 						errSem(lineCount);
 					}else{
 						wMacro = true;
 						macroF.open("mac.txt",std::ofstream::trunc | std::ofstream::out);
 						macroF << macElem.def;
 						macroF.close();
-						macroF.open("mac.txt");						
+						macroF.open("mac.txt");
+						break;		
 					}
 				}
 				else if(tokens[t]=="\n"){
@@ -266,6 +345,7 @@ string preProc(string fileIn){
 			if(!getline(macroF,line)){
 				wMacro = false;
 				macroF.close();
+				remove("mac.txt");
 			}
 		}
 		if(!wMacro){
