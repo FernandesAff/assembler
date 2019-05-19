@@ -3,8 +3,6 @@
 list<TS> tabSimbolos;
 
 void primeiraPassagem (string preName){
-    list<TD> tabDiretivas = inicializarTD();
-    list<TI> tabInstrucoes = inicializarTI();
     string line;
     vector<string> tokens;
     ifstream fr(preName);
@@ -14,22 +12,36 @@ void primeiraPassagem (string preName){
 
     while(getline(fr,line)){
         split(line,tokens);
-        if(tokens[0] != "\0"){
-            for(int t=0;t<tokens.size()-1;t++){
-                if(isLabel(tokens[t])){
-                    labelAnalyzer(tokens[t], lc, pc, &labelCounter);
-                }else if(inList(tokens[t], tabInstrucoes)){
-                    TI inst;
-                    inList(tokens[t], tabInstrucoes, inst);
-                    cout << "INST " << inst.nome << endl;
-                }else if(inList(tokens[t], tabDiretivas)){
-                    TD dir;
-                    inList(tokens[t], tabDiretivas, dir);
-                    cout << "DIR " << dir.nome << endl;
-                }
-            }
-        }
+        analyze(tokens, &labelCounter, lc , &pc);
         lc++;
         labelCounter = 0;
+    }
+
+    // for(TS t:tabSimbolos){
+    //     cout << t.nome << " " << t.valor << endl; 
+    // }
+    
+}
+
+void analyze (vector<string> tokens, int *labelCounter, int lc, int *pc){
+    list<TD> tabDiretivas = inicializarTD();
+    list<TI> tabInstrucoes = inicializarTI();
+    if(isLabel(tokens[0])){
+        labelAnalyzer(tokens[0], lc, *pc, labelCounter);
+        if(tokens.size() > 2){
+            vector<string> newTokens;
+            copyVector(1, tokens.size(), tokens, &newTokens);
+            analyze(newTokens, labelCounter, lc, pc);
+        }
+    }else if(inList(tokens[0], tabInstrucoes)){
+        TI inst;
+        inList(tokens[0], tabInstrucoes, inst);
+        instAnalyzer(inst, tokens, lc, pc);
+    }else if(inList(tokens[0], tabDiretivas)){
+        TD dir;
+        inList(tokens[0], tabDiretivas, dir);
+        *pc += dirAnalyzer(dir, tokens, lc);
+    }else{
+        printError(ERRO_SINTATICO_MSG, lc);
     }
 }

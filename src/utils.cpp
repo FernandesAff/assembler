@@ -98,6 +98,19 @@ bool validLabel(const string& label){
 	return true;
 }
 
+bool validVar(const string& var){
+	if(isdigit(var.at(0)) || var.length() > 50){
+		return false;
+	}else{
+		for(auto c:var){
+			if(!isalpha(c) && !isdigit(c) && c != '_'){
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
 bool isLabel(const string& token){
 	return token.back() == ':';
 }
@@ -138,4 +151,17 @@ string takeFName(string fName){
 		(c != '/')? buff+=c:buff="";
 		
 	}
+}
+
+void copyVector(int start, int end, vector<string> oldVector, vector<string>* newVector){
+    for(int i = start; i < end; i++){
+        newVector->push_back(oldVector[i]);
+    }
+}
+
+bool isNumber(string s){
+    for(auto c:s){
+        if(!isdigit(c)) return false;
+    }
+    return true;
 }

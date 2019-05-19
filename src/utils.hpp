@@ -15,6 +15,12 @@ const string COLOR_RESET = "\x1b[0m";
 const string ERRO_LEXICO_MSG = "Erro léxico";
 const string ERRO_SINTATICO_MSG = "Erro sintático";
 const string ERRO_SEMANTICO_MSG = "Erro semântico";
+enum Tipos {
+        VARIAVEL,
+        INSTRUCAO,
+        ROTULO,
+		DIRETIVA
+};
 
 
 //linha da tabela de simbolos
@@ -58,6 +64,8 @@ string upCase(const string& s);
 
 bool validLabel(const string& label);
 
+bool validVar(const string& var);
+
 bool isLabel(const string& token);
 
 template <typename T>
@@ -90,5 +98,9 @@ void errSem(int line);
 bool validConst(string arg);
 
 string takeFName(string fName);
+
+void copyVector(int start, int end, vector<string> oldVector, vector<string> *newVector);
+
+bool isNumber(string s);
 
 #endif

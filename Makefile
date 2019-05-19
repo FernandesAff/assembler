@@ -1,4 +1,4 @@
-CXX=g++ -std=c++17
+CXX=g++ -std=c++17 -g
 OBJDIR=./obj/
 SRCDIR=./src/
 

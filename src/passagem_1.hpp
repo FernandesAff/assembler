@@ -7,4 +7,6 @@
 
 void primeiraPassagem (string preName);
 
+void analyze (vector<string> tokens, int *labelCounter, int lc, int *pc);
+
 #endif
