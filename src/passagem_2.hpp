@@ -5,6 +5,9 @@
 #include "analisador_semantico.hpp"
 #include "analisador_sintatico.hpp"
 #include "utils.hpp"
+#include "passagem_1.hpp"
+
+extern string objName;
 
 void segundaPassagem(string preName);
 

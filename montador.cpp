@@ -9,6 +9,7 @@ int main(int argc, char const *argv[]){
     string preName;
     preName = preProc(fileIn);
     primeiraPassagem(preName);
+    segundaPassagem(preName);
 
     return 0;
 }

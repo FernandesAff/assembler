@@ -28,6 +28,9 @@ typedef struct TS{
     string nome;
     int valor;
     bool cte;
+    int tam;
+    string valorCte;
+    bool isLabel;
 } TS;
 
 //linha da tabela de instruções
@@ -57,7 +60,7 @@ TD novaDiretiva(string mnemonico, int operandos, int tamanho);
 
 TS novoSimbolo(string simbolo, int valor);
 
-TS novoSimbolo(string simbolo, int valor, bool cte);
+TS novoSimbolo(string simbolo, int valor, bool cte, int tam, string valorCte, bool isLabel);
 
 //Divide a string str em elementos e passa para o vetor dest, finalizando com um "/0"
 //Ignora espacos, tabs e comentarios
@@ -105,5 +108,9 @@ string takeFName(string fName);
 void copyVector(int start, int end, vector<string> oldVector, vector<string> *newVector);
 
 bool isNumber(string s);
+
+void printError(string msgErro, int line);
+
+void printError(string msgErro);
 
 #endif

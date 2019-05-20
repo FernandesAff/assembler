@@ -6,18 +6,10 @@
 
 extern list<TS> tabSimbolos;
 
-void printError(string msgErro, int line);
-
 void labelAnalyzer(string label, int lc, int pc, int* labelCounter);
 
 bool sameLineLabel(int labelCounter);
 
-void instAnalyzer(TI inst, vector<string> tokens, int lc, int *pc);
-
-int dirAnalyzer(TD dir, vector<string> tokens, int lc);
-
-void analyzeExpression(vector<string> tokens, int lc);
-
-void analyzeCopy(vector<string> tokens, int lc);
+int dirAnalyzer(TD dir, vector<string> tokens, int lc, int *text, int *data);
 
 #endif

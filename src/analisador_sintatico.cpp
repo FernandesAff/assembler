@@ -1,18 +1,14 @@
 #include "analisador_sintatico.hpp"
 
-void printError(string msgErro, int line){
-    cout << RED << "Linha " << line << ":" << msgErro << endl;
-}
-
 void labelAnalyzer(string label, int lc, int pc, int* labelCounter){
     if (!validLabel(label)){
         printError(ERRO_LEXICO_MSG, lc);
-    } else if(inList(label, tabSimbolos)){
+    } else if(inList(label.substr(0, label.size()-1), tabSimbolos)){
         printError(ERRO_SEMANTICO_MSG, lc); //verificar se esse é o erro adequado
     } else if(sameLineLabel(*labelCounter)){
         printError(ERRO_SINTATICO_MSG, lc);
     } else{
-        tabSimbolos.push_back(novoSimbolo(label.substr(0, label.size()-1), pc, false));
+        tabSimbolos.push_back(novoSimbolo(label.substr(0, label.size()-1), pc, false, 1, "", true));
     }
     labelCounter++;
 }
@@ -21,35 +17,36 @@ bool sameLineLabel(int labelCounter){
     return (labelCounter > 0 ?  true : false);
 }
 
-void instAnalyzer(TI inst, vector<string> tokens, int lc, int *pc){
-    if(upCase(inst.nome) == "COPY"){
-        analyzeCopy(tokens, lc);
-    }else if(upCase(inst.nome) == "STOP"){
-        if(tokens.size() != 2) printError(ERRO_SINTATICO_MSG, lc);
-    }else if(tokens.size() == inst.operandos){
-        analyzeExpression(tokens, lc);
-    }else if(tokens.size() - 2  == inst.operandos){
-        if(!validVar(tokens[1])) printError(ERRO_LEXICO_MSG, lc);
-    }else{
-        printError(ERRO_SINTATICO_MSG, lc);
-    }
-    *pc += inst.tamanho;
-}
-
-int dirAnalyzer(TD dir, vector<string> tokens, int lc){
+int dirAnalyzer(TD dir, vector<string> tokens, int lc, int *text, int *data){
     int increment = 0;
     if(upCase(dir.nome) == "SECTION"){
         if(tokens.size() == 3){
-            if(upCase(tokens[1]) != "DATA" && upCase(tokens[1]) != "TEXT") printError(ERRO_SINTATICO_MSG, lc);
+            if(upCase(tokens[1]) == "TEXT"){
+                if(*text != -1) printError(ERRO_SEMANTICO_MSG, lc);
+                else{
+                    *text = 0;
+                }
+            }else if(upCase(tokens[1]) == "DATA"){
+                if(*data != -1) printError(ERRO_SEMANTICO_MSG, lc);
+                else{
+                    *data = 0;
+                }
+            }else{
+                printError(ERRO_SINTATICO_MSG, lc);
+            }
         }else {
             printError(ERRO_SINTATICO_MSG, lc);
         }
     }else if(upCase(dir.nome) == "SPACE"){
         if(tokens.size() == 2){
             increment++;
+            tabSimbolos.back().tam = 1;
+            tabSimbolos.back().isLabel = false;
         }else if(tokens.size() == 3){
             if(isNumber(tokens[1])){
                 increment += stoi(tokens[1]);
+                tabSimbolos.back().tam = stoi(tokens[1]);
+                tabSimbolos.back().isLabel = false;
             }else{
                 printError(ERRO_SINTATICO_MSG, lc);
             }
@@ -61,6 +58,8 @@ int dirAnalyzer(TD dir, vector<string> tokens, int lc){
             if(validConst(tokens[1])){
                 increment++;
                 tabSimbolos.back().cte = true;
+                tabSimbolos.back().valorCte = tokens[1];
+                tabSimbolos.back().isLabel = false;
             }else{
                printError(ERRO_SINTATICO_MSG, lc); 
             }
@@ -71,42 +70,4 @@ int dirAnalyzer(TD dir, vector<string> tokens, int lc){
         printError(ERRO_SINTATICO_MSG, lc);
     }
     return increment;
-}
-
-void analyzeExpression(vector<string> tokens, int lc){
-    if(!validVar(tokens[1])) printError(ERRO_LEXICO_MSG, lc);
-    if(tokens[2] != "+") printError(ERRO_SINTATICO_MSG, lc);
-    if(!validVar(tokens[3])) printError(ERRO_LEXICO_MSG, lc);
-}
-
-void analyzeCopy(vector<string> tokens, int lc){
-    if(tokens.size() == 6){
-        if(tokens[2] == "+"){
-            if(!validVar(tokens[1])) printError(ERRO_LEXICO_MSG, lc);
-            if(!validVar(tokens[3].substr(0, tokens[3].size()-1))) printError(ERRO_LEXICO_MSG, lc);
-            if(tokens[3].back() != ',') printError(ERRO_SINTATICO_MSG, lc);
-            if(!validVar(tokens[4])) printError(ERRO_LEXICO_MSG, lc);
-        }else if(tokens[3] == "+"){
-            if(!validVar(tokens[1].substr(0, tokens[1].size()-1))) printError(ERRO_LEXICO_MSG, lc);
-            if(tokens[1].back() != ',') printError(ERRO_SINTATICO_MSG, lc);
-            if(!validVar(tokens[2])) printError(ERRO_LEXICO_MSG, lc);
-            if(!validVar(tokens[4])) printError(ERRO_LEXICO_MSG, lc);
-        }else{
-            printError(ERRO_SINTATICO_MSG, lc);
-        }
-    }else if(tokens.size() == 8){
-        if(!validVar(tokens[1])) printError(ERRO_LEXICO_MSG, lc);
-        if(tokens[2] != "+") printError(ERRO_SINTATICO_MSG, lc);
-        if(!validVar(tokens[3].substr(0, tokens[3].size()-1))) printError(ERRO_LEXICO_MSG, lc);
-        if(tokens[3].back() != ',') printError(ERRO_SINTATICO_MSG, lc);
-        if(!validVar(tokens[4])) printError(ERRO_LEXICO_MSG, lc);
-        if(tokens[5] != "+") printError(ERRO_SINTATICO_MSG, lc);
-        if(!validVar(tokens[6])) printError(ERRO_LEXICO_MSG, lc);
-    }else if(tokens.size()  == 4){
-        if(!validVar(tokens[1].substr(0, tokens[1].size()-1))) printError(ERRO_LEXICO_MSG, lc);
-        if(tokens[1].back() != ',') printError(ERRO_SINTATICO_MSG, lc);
-        if(!validVar(tokens[2])) printError(ERRO_LEXICO_MSG, lc);
-    }else{
-        printError(ERRO_SINTATICO_MSG, lc);
-    }
 }

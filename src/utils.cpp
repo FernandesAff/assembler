@@ -65,11 +65,14 @@ TS novoSimbolo(string simbolo, int valor){
     return simb;
 }
 
-TS novoSimbolo(string simbolo, int valor, bool cte){
+TS novoSimbolo(string simbolo, int valor, bool cte, int tam, string valorCte, bool isLabel){
     TS simb;
     simb.nome = simbolo;
     simb.valor = valor;
     simb.cte = cte;
+    simb.tam = tam;
+    simb.valorCte = valorCte;
+    simb.isLabel = isLabel;
     return simb;
 }
 
@@ -171,4 +174,12 @@ bool isNumber(string s){
         if(!isdigit(c)) return false;
     }
     return true;
+}
+
+void printError(string msgErro, int line){
+    cout << RED << "Linha " << line << ":" << msgErro << endl;
+}
+
+void printError(string msgErro){
+    cout << RED << msgErro << endl;
 }
