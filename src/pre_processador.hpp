@@ -20,7 +20,7 @@ void equ(const string& label, string arg, list<TS>& tab, int line);
 //se false, pula prox linha. Em caso de erro retorna true
 bool ifd(string label, list<TS>& tab, int line);
 
-void writeLine(string labelAnt, vector<string> &tokens, ofstream &fw);
+void writeLine(string& labelAnt, vector<string> &tokens, ofstream &fw);
 
 void writeMacroDef(MNDT* macroElem, vector<string> tokens);
 

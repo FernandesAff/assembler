@@ -36,7 +36,6 @@ list<TD> inicializarTD(){
     tabelaDeDiretivas.push_back(novaDiretiva( "SECTION", 1, 0));
     tabelaDeDiretivas.push_back(novaDiretiva( "SPACE", -1, -1));
     tabelaDeDiretivas.push_back(novaDiretiva( "CONST", 1, 1));
-    tabelaDeDiretivas.push_back(novaDiretiva( "END", 0, 0));
 
     return tabelaDeDiretivas;
 }

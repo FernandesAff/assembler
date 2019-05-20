@@ -50,11 +50,11 @@ bool ifd(string label, list<TS>& tab, int line){
 			errSem(line);
 			b = true;
 		}
-	}	
+	}
 	return b;
 }
 
-void writeLine(string labelAnt, vector<string> &tokens, ofstream &fw){
+void writeLine(string& labelAnt, vector<string> &tokens, ofstream &fw){
 	int t;
 	if(labelAnt != ""){
 		fw << labelAnt << " ";
@@ -119,6 +119,7 @@ string preProc(string fileIn){
 		if(!wMacro){
 			lineCount++; //No modo macro nao conta linha
 		}else{
+			//substitui args na macro
 			for(int t=0;t<tokens.size();t++){
 				if(tokens[t].front()=='#'){
 					if(tokens[t].back() == ','){
@@ -168,7 +169,8 @@ string preProc(string fileIn){
 									macroF.close();
 								}
 							}
-							if(!wMacro){
+							else{
+								lineCount++;
 								if(!getline(fr,line)){
 									theEnd = true;
 								}
@@ -187,7 +189,8 @@ string preProc(string fileIn){
 							labelAnt = "";
 						}else if(labelAnt != ""){
 							nameMacro = labelAnt;
-							nameMacro = nameMacro.substr(0,nameMacro.size()-1);
+							labelAnt = "";
+							// nameMacro = nameMacro.substr(0,nameMacro.size()-1);
 						}else{
 							errSin(lineCount);
 							macroErr = true;
