@@ -35,4 +35,4 @@ dir:
 	if test -d obj; then echo obj exists; else mkdir obj;fi
 
 clean:
-	rm -f $(OBJDIR)*.o *.pre tradutor
+	rm -f $(OBJDIR)*.o *.pre *.obj tradutor
