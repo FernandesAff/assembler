@@ -57,7 +57,7 @@ bool ifd(string label, list<TS>& tab, int line){
 void writeLine(string& labelAnt, vector<string> &tokens, ofstream &fw){
 	int t;
 	if(labelAnt != ""){
-		fw << labelAnt << " ";
+		fw << labelAnt << ": ";
 		labelAnt = "";
 	}
 	fw << tokens[0];
