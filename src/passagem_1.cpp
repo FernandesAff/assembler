@@ -18,11 +18,6 @@ void primeiraPassagem (string preName){
         lc++;
         labelCounter = 0;
     }
-
-    for(TS t:tabSimbolos){
-        cout << t.nome << " " << t.valor << " " << t.cte << " " << t.isLabel << " " << t.tam << " " << t.valorCte << endl; 
-    }
-    
 }
 
 void analyze (vector<string> tokens, int *labelCounter, int lc, int *pc){
