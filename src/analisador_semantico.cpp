@@ -143,7 +143,7 @@ vector<int> analyzeCopy(vector<string> tokens, int lc){
 
 int analyzeAccOps(vector<string> tokens, TI inst, int lc){
     int param = -1;
-    if(tokens.size() == inst.operandos){
+    if(tokens.size() - 4 == inst.operandos){
         param = analyzeExpression(tokens[1], tokens[2], tokens[3], lc);
     }else if(tokens.size() - 2  == inst.operandos){
         if(!validVar(tokens[1])) printError(ERRO_LEXICO_MSG, lc);
@@ -185,7 +185,7 @@ int analyzeJmpOps(vector<string> tokens, TI inst, int lc){
 
 int analyzeStoreOps(vector<string> tokens, TI inst, int lc){
     int param = -1;
-    if(tokens.size() == inst.operandos){
+    if(tokens.size() - 4 == inst.operandos){
         param = analyzeExpression(tokens[1], tokens[2], tokens[3], lc);
     }else if(tokens.size() - 2  == inst.operandos){
         if(!validVar(tokens[1])) printError(ERRO_LEXICO_MSG, lc);
